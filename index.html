@@ -2,26 +2,39 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>AR Horse on Marker</title>
+  <title>AR Horse NFT Marker</title>
+
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.2/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.2/aframe/build/aframe-ar-nft.js"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+  </style>
 </head>
 
-<body style="margin: 0; overflow: hidden;">
+<body>
 
-  <!-- カメラ映像に重ねる AR シーン -->
   <a-scene
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;"
     embedded
-    arjs="sourceType: webcam; debugUIEnabled: false;"
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
   >
 
-    <!-- 自作マーカー（marker.patt）を使う -->
-    <a-marker type="pattern" url="marker.patt">
+    <!-- NFT マーカー -->
+    <a-nft
+      type="nft"
+      url="marker"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance="0.01"
+      smoothThreshold="5"
+    >
 
-      <!-- 馬グループ全体（回転や移動のベース） -->
-      <a-entity id="horse-root" position="0 0 0">
+      <!-- 馬（箱で作る） -->
+      <a-entity id="horse-root">
 
-        <!-- 馬の体 -->
+        <!-- 体 -->
         <a-box position="0 0.25 0"
                depth="0.6" height="0.3" width="0.2"
                color="#8B4513"></a-box>
@@ -36,7 +49,7 @@
                depth="0.2" height="0.25" width="0.12"
                color="#A0522D"></a-box>
 
-        <!-- 足（4本） -->
+        <!-- 足 -->
         <a-box position="-0.07 0.05 -0.18"
                depth="0.1" height="0.1" width="0.06"
                color="#654321"></a-box>
@@ -57,31 +70,28 @@
 
       </a-entity>
 
-    </a-marker>
+    </a-nft>
 
-    <!-- カメラ -->
     <a-entity camera></a-entity>
 
   </a-scene>
 
   <script>
-    const horseRoot = document.getElementById("horse-root");
+    const horse = document.getElementById("horse-root");
 
-    // 馬をマーカーの上で円形に走らせる
     let angle = 0;
 
     function animateHorse() {
-      angle += 0.03; // スピード
+      angle += 0.03;
 
-      const r = 0.6; // 半径（メートル相当）
+      const r = 0.6;
       const x = Math.cos(angle) * r;
       const z = Math.sin(angle) * r;
 
-      horseRoot.setAttribute("position", `${x} 0 ${z}`);
+      horse.setAttribute("position", `${x} 0 ${z}`);
 
-      // 進行方向を向かせる
       const yaw = -angle * 180 / Math.PI + 90;
-      horseRoot.setAttribute("rotation", `0 ${yaw} 0`);
+      horse.setAttribute("rotation", `0 ${yaw} 0`);
 
       requestAnimationFrame(animateHorse);
     }
